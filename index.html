@@ -1,0 +1,738 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>矩阵初等行变换动态演示系统</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .display-panel {
+            flex: 2;
+            min-width: 500px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            color: #1a2980;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #26d0ce;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-title i {
+            margin-right: 8px;
+            font-size: 1.5rem;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #1a2980;
+            font-size: 0.95rem;
+        }
+        
+        select, input, textarea, button {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        button {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(to right, #d31027, #ea384d);
+        }
+        
+        .matrix-container {
+            background: linear-gradient(145deg, #e6e9f0, #eef1f5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .matrix {
+            font-family: monospace;
+            font-size: 1.2rem;
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+            white-space: pre;
+            max-width: 100%;
+            overflow: auto;
+        }
+        
+        .steps-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .steps-title {
+            font-size: 1.1rem;
+            color: #1a2980;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .steps-content {
+            font-family: monospace;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            background-color: white;
+            padding: 12px;
+            border-radius: 6px;
+            min-height: 120px;
+            font-size: 0.9rem;
+        }
+        
+        .explanation-container {
+            background: linear-gradient(145deg, #fff8e1, #ffecb3);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .explanation-title {
+            font-size: 1.1rem;
+            color: #1a2980;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .explanation-content {
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .engineering-context {
+            background-color: #e3f2fd;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            border-left: 3px solid #2196f3;
+            font-size: 0.9rem;
+        }
+        
+        .instructions {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .instructions h3 {
+            color: #1a2980;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .instructions ol {
+            padding-left: 18px;
+            font-size: 0.9rem;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 0 0 15px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .qr-section {
+            text-align: center;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 10px auto;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .qr-instruction {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: #555;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .control-panel, .display-panel {
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator"></i> 矩阵初等行变换动态演示系统</h1>
+            <p class="subtitle">工程数学教学工具 - 专为开放教育土木工程本科设计</p>
+        </header>
+        
+        <div class="content">
+            <!-- 控制面板 -->
+            <div class="control-panel">
+                <h2 class="panel-title"><i class="fas fa-sliders-h"></i> 控制面板</h2>
+                
+                <div class="input-group">
+                    <label for="matrix-input"><i class="fas fa-table"></i> 输入矩阵（分号分隔行，逗号分隔列）</label>
+                    <textarea id="matrix-input">2,1,10;1,-1,2</textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label for="case-select"><i class="fas fa-hard-hat"></i> 工程案例</label>
+                    <select id="case-select">
+                        <option value="beam">简支梁支座反力计算</option>
+                        <option value="truss">桁架节点平衡分析</option>
+                        <option value="inventory">材料库存平衡计算</option>
+                        <option value="custom">自定义矩阵</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="operation-select"><i class="fas fa-tasks"></i> 选择操作</label>
+                    <select id="operation-select">
+                        <option value="swap">行交换</option>
+                        <option value="scale">行缩放</option>
+                        <option value="combine">行组合</option>
+                        <option value="echelon">行阶梯形化简</option>
+                    </select>
+                </div>
+                
+                <div id="params-container">
+                    <div class="input-group">
+                        <label for="param1"><i class="fas fa-sort-numeric-up"></i> 行索引1</label>
+                        <input type="number" id="param1" value="1" min="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="param2"><i class="fas fa-sort-numeric-up"></i> 行索引2</label>
+                        <input type="number" id="param2" value="2" min="1">
+                    </div>
+                    <div class="input-group" id="param3-group">
+                        <label for="param3"><i class="fas fa-superscript"></i> 系数k</label>
+                        <input type="number" id="param3" value="-1" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="run-btn" class="run-btn">
+                        <i class="fas fa-play-circle"></i> 执行操作
+                    </button>
+                    <button id="reset-btn" class="reset-btn">
+                        <i class="fas fa-redo"></i> 重置矩阵
+                    </button>
+                </div>
+                
+                <div class="instructions">
+                    <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+                    <ol>
+                        <li>在文本框中输入矩阵，行用分号(;)分隔，列用逗号(,)分隔</li>
+                        <li>选择工程案例或使用自定义矩阵</li>
+                        <li>选择要执行的矩阵操作类型</li>
+                        <li>输入操作所需参数</li>
+                        <li>点击"执行操作"按钮查看结果</li>
+                        <li>所有操作步骤将记录在右侧面板中</li>
+                    </ol>
+                </div>
+                
+                <div class="qr-section">
+                    <h3><i class="fas fa-qrcode"></i> 手机访问</h3>
+                    <div class="qr-code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://your-deployed-url.com" 
+                             alt="微信扫码访问" width="150" height="150">
+                    </div>
+                    <p class="qr-instruction">使用微信扫描二维码在手机上访问此工具</p>
+                </div>
+            </div>
+            
+            <!-- 显示面板 -->
+            <div class="display-panel">
+                <h2 class="panel-title"><i class="fas fa-desktop"></i> 显示面板</h2>
+                
+                <div class="matrix-container">
+                    <div class="matrix" id="matrix-display">[ 2  1 10 ]
+[ 1 -1  2 ]</div>
+                </div>
+                
+                <div class="steps-container">
+                    <div class="steps-title"><i class="fas fa-list-ol"></i> 操作步骤历史</div>
+                    <div class="steps-content" id="steps-display">等待操作执行...</div>
+                </div>
+                
+                <div class="explanation-container">
+                    <div class="explanation-title"><i class="fas fa-lightbulb"></i> 工程解释</div>
+                    <div class="explanation-content" id="explanation">
+                        工程背景：简支梁受力平衡方程
+                        2R1 + R2 = 10 (竖向力平衡)
+                        R1 - R2 = 2 (力矩平衡)
+                        
+                        <div class="engineering-context">
+                            <strong>土木工程意义：</strong> 矩阵行变换可用于简化结构力学方程，
+                            快速求解支座反力，确保结构设计的安全性。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>工程数学教学工具 &copy; 2023 | 专为开放教育土木工程本科设计</p>
+            <p>矩阵行变换动态演示系统 | 技术支持：线性代数与结构力学应用</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 当前矩阵和步骤历史
+        let currentMatrix = [];
+        let stepsHistory = [];
+        
+        // DOM元素
+        const matrixInput = document.getElementById('matrix-input');
+        const caseSelect = document.getElementById('case-select');
+        const operationSelect = document.getElementById('operation-select');
+        const param1 = document.getElementById('param1');
+        const param2 = document.getElementById('param2');
+        const param3 = document.getElementById('param3');
+        const param3Group = document.getElementById('param3-group');
+        const runBtn = document.getElementById('run-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const matrixDisplay = document.getElementById('matrix-display');
+        const stepsDisplay = document.getElementById('steps-display');
+        const explanationDisplay = document.getElementById('explanation');
+        
+        // 初始化页面
+        function initialize() {
+            loadCase();
+            updateParams();
+            resetMatrix();
+            
+            // 添加事件监听器
+            caseSelect.addEventListener('change', loadCase);
+            operationSelect.addEventListener('change', updateParams);
+            runBtn.addEventListener('click', runOperation);
+            resetBtn.addEventListener('click', resetMatrix);
+        }
+        
+        // 加载工程案例
+        function loadCase() {
+            switch(caseSelect.value) {
+                case 'beam': // 简支梁支座反力
+                    matrixInput.value = '2,1,10;1,-1,2';
+                    explanationDisplay.innerHTML = `
+                        工程背景：简支梁受力平衡方程<br>
+                        2R1 + R2 = 10 (竖向力平衡)<br>
+                        R1 - R2 = 2 (力矩平衡)
+                        
+                        <div class="engineering-context">
+                            <strong>土木工程意义：</strong> 矩阵行变换可用于简化结构力学方程，
+                            快速求解支座反力，确保结构设计的安全性。
+                        </div>
+                    `;
+                    break;
+                case 'truss': // 桁架节点平衡
+                    matrixInput.value = '1,0,0.707,0;0,1,0.707,-10;-1,0,0,0.707;0,-1,0,0.707';
+                    explanationDisplay.innerHTML = `
+                        工程背景：桁架节点力平衡方程<br>
+                        F1 + 0.707F3 = 0 (x方向)<br>
+                        F2 + 0.707F3 = -10 (y方向)<br>
+                        -F1 + 0.707F4 = 0 (x方向)<br>
+                        -F2 + 0.707F4 = 0 (y方向)
+                        
+                        <div class="engineering-context">
+                            <strong>土木工程意义：</strong> 行变换可帮助识别结构体系是否稳定，
+                            检测是否存在机构体系（零主元）。
+                        </div>
+                    `;
+                    break;
+                case 'inventory': // 材料库存平衡
+                    matrixInput.value = '120,95,80;200,0,150;75,110,60';
+                    explanationDisplay.innerHTML = `
+                        工程背景：三个仓库的三种材料库存<br>
+                        仓库1: [120, 95, 80]  // 型钢, 水泥, 砂石(吨)<br>
+                        仓库2: [200, 0, 150]<br>
+                        仓库3: [75, 110, 60]
+                        
+                        <div class="engineering-context">
+                            <strong>土木工程意义：</strong> 通过行变换可以快速计算总库存，
+                            调整库存数据（损耗/补充），排序整理库存信息。
+                        </div>
+                    `;
+                    break;
+                case 'custom': // 自定义
+                    matrixInput.value = '';
+                    explanationDisplay.innerHTML = `
+                        自定义矩阵：输入您自己的矩阵数据
+                        
+                        <div class="engineering-context">
+                            <strong>使用提示：</strong> 输入矩阵数据，行用分号(;)分隔，
+                            列用逗号(,)分隔。例如：1,2,3;4,5,6;7,8,9
+                        </div>
+                    `;
+                    break;
+            }
+        }
+        
+        // 更新参数输入
+        function updateParams() {
+            if (operationSelect.value === 'combine') {
+                param3Group.style.display = 'block';
+            } else {
+                param3Group.style.display = 'none';
+            }
+        }
+        
+        // 重置矩阵
+        function resetMatrix() {
+            try {
+                currentMatrix = parseMatrix(matrixInput.value);
+                stepsHistory = [];
+                updateDisplay();
+                stepsDisplay.textContent = '矩阵已重置';
+            } catch (e) {
+                alert('矩阵格式错误: ' + e.message);
+            }
+        }
+        
+        // 解析矩阵字符串
+        function parseMatrix(str) {
+            if (!str.trim()) {
+                throw new Error('矩阵不能为空');
+            }
+            
+            const rows = str.split(';');
+            const matrix = [];
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cols = rows[i].split(',');
+                const row = [];
+                
+                for (let j = 0; j < cols.length; j++) {
+                    const num = parseFloat(cols[j].trim());
+                    if (isNaN(num)) {
+                        throw new Error(`无效的数字: ${cols[j]}`);
+                    }
+                    row.push(num);
+                }
+                
+                if (i > 0 && row.length !== matrix[0].length) {
+                    throw new Error('所有行必须有相同的列数');
+                }
+                
+                matrix.push(row);
+            }
+            
+            return matrix;
+        }
+        
+        // 格式化矩阵显示
+        function formatMatrix(matrix) {
+            return matrix.map(row => 
+                '[' + row.map(num => {
+                    // 格式化为固定宽度，保留2位小数
+                    return num.toFixed(2).padStart(6, ' ');
+                }).join(' ') + ' ]'
+            ).join('\n');
+        }
+        
+        // 执行操作
+        function runOperation() {
+            if (currentMatrix.length === 0) {
+                resetMatrix();
+                return;
+            }
+            
+            try {
+                switch(operationSelect.value) {
+                    case 'swap':
+                        const i1 = parseInt(param1.value) - 1;
+                        const j1 = parseInt(param2.value) - 1;
+                        if (isNaN(i1) || isNaN(j1) || i1 < 0 || j1 < 0 || 
+                            i1 >= currentMatrix.length || j1 >= currentMatrix.length) {
+                            throw new Error('无效的行索引');
+                        }
+                        currentMatrix = rowSwap(currentMatrix, i1, j1);
+                        stepsHistory.push(`交换行 ${i1+1} 和 行 ${j1+1}`);
+                        break;
+                        
+                    case 'scale':
+                        const i2 = parseInt(param1.value) - 1;
+                        const k = parseFloat(param2.value);
+                        if (isNaN(i2) || isNaN(k) || i2 < 0 || i2 >= currentMatrix.length || k === 0) {
+                            throw new Error('无效的参数');
+                        }
+                        currentMatrix = rowScale(currentMatrix, i2, k);
+                        stepsHistory.push(`行 ${i2+1} × ${k.toFixed(2)}`);
+                        break;
+                        
+                    case 'combine':
+                        const i3 = parseInt(param1.value) - 1;
+                        const j3 = parseInt(param2.value) - 1;
+                        const k2 = parseFloat(param3.value);
+                        if (isNaN(i3) || isNaN(j3) || isNaN(k2) || i3 < 0 || j3 < 0 || 
+                            i3 >= currentMatrix.length || j3 >= currentMatrix.length || i3 === j3) {
+                            throw new Error('无效的参数');
+                        }
+                        currentMatrix = rowCombine(currentMatrix, i3, j3, k2);
+                        stepsHistory.push(`行 ${i3+1} × ${k2.toFixed(2)} + 行 ${j3+1}`);
+                        break;
+                        
+                    case 'echelon':
+                        const result = rowEchelon(currentMatrix);
+                        currentMatrix = result.matrix;
+                        stepsHistory = stepsHistory.concat(result.steps);
+                        break;
+                }
+                
+                updateDisplay();
+            } catch (e) {
+                alert('操作错误: ' + e.message);
+            }
+        }
+        
+        // 行交换函数
+        function rowSwap(matrix, i, j) {
+            const newMatrix = [...matrix];
+            [newMatrix[i], newMatrix[j]] = [newMatrix[j], newMatrix[i]];
+            return newMatrix;
+        }
+        
+        // 行缩放函数
+        function rowScale(matrix, i, k) {
+            const newMatrix = [...matrix];
+            newMatrix[i] = newMatrix[i].map(val => val * k);
+            return newMatrix;
+        }
+        
+        // 行组合函数
+        function rowCombine(matrix, i, j, k) {
+            const newMatrix = [...matrix];
+            newMatrix[j] = newMatrix[j].map((val, idx) => val + k * newMatrix[i][idx]);
+            return newMatrix;
+        }
+        
+        // 行阶梯形化简函数
+        function rowEchelon(matrix) {
+            const steps = [];
+            let newMatrix = matrix.map(row => [...row]);
+            const rows = newMatrix.length;
+            const cols = newMatrix[0].length;
+            let pivot = 0;
+            
+            steps.push('开始行阶梯形化简...');
+            
+            for (let r = 0; r < rows; r++) {
+                if (pivot >= cols) break;
+                
+                // 找到主元
+                let maxRow = r;
+                for (let i = r + 1; i < rows; i++) {
+                    if (Math.abs(newMatrix[i][pivot]) > Math.abs(newMatrix[maxRow][pivot])) {
+                        maxRow = i;
+                    }
+                }
+                
+                if (Math.abs(newMatrix[maxRow][pivot]) < 1e-6) {
+                    steps.push(`警告: 第${pivot+1}列主元过小，可能为机构体系!`);
+                    pivot++;
+                    r--;
+                    continue;
+                }
+                
+                // 行交换
+                if (maxRow !== r) {
+                    newMatrix = rowSwap(newMatrix, r, maxRow);
+                    steps.push(`交换行 ${r+1} ↔ ${maxRow+1}`);
+                }
+                
+                // 主元归一化
+                const pivotVal = newMatrix[r][pivot];
+                if (Math.abs(pivotVal) > 1e-6) {
+                    const scale = 1 / pivotVal;
+                    newMatrix = rowScale(newMatrix, r, scale);
+                    steps.push(`行 ${r+1} × ${scale.toFixed(4)}`);
+                }
+                
+                // 消元
+                for (let i = r + 1; i < rows; i++) {
+                    if (Math.abs(newMatrix[i][pivot]) > 1e-6) {
+                        const k = -newMatrix[i][pivot];
+                        newMatrix = rowCombine(newMatrix, r, i, k);
+                        steps.push(`行 ${r+1} × ${k.toFixed(4)} + 行 ${i+1}`);
+                    }
+                }
+                
+                pivot++;
+            }
+            
+            steps.push('行阶梯形化简完成!');
+            return { matrix: newMatrix, steps };
+        }
+        
+        // 更新显示
+        function updateDisplay() {
+            // 更新矩阵显示
+            matrixDisplay.textContent = formatMatrix(currentMatrix);
+            
+            // 更新步骤显示
+            stepsDisplay.textContent = '步骤历史:\n\n';
+            stepsHistory.forEach((step, idx) => {
+                stepsDisplay.textContent += `${idx+1}. ${step}\n`;
+            });
+            
+            // 更新工程解释（针对简支梁案例）
+            if (currentMatrix.length === 2 && currentMatrix[0].length === 3 && 
+                caseSelect.value === 'beam') {
+                const R2 = currentMatrix[1][2];
+                const R1 = currentMatrix[0][2] - currentMatrix[0][1] * R2;
+                explanationDisplay.innerHTML = `
+                    工程背景：简支梁受力平衡方程<br>
+                    2R1 + R2 = 10 (竖向力平衡)<br>
+                    R1 - R2 = 2 (力矩平衡)
+                    
+                    <div class="engineering-context">
+                        <strong>计算结果：</strong> 
+                        R1 = ${R1.toFixed(2)} kN, 
+                        R2 = ${R2.toFixed(2)} kN
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
